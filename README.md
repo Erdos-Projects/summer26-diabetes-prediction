@@ -9,7 +9,7 @@ Team project: summer26-diabetes-prediction
 
 **Question:** Can we accurately predict an individual's risk of having diabetes or prediabetes based on self-reported health, lifestyle, and demographic survey data?
 
-**Decision/Action Informed:** 
+**Decision/Action Informed:**
 This analysis will inform targeted public health interventions and early screening programs. By accurately identifying individuals at high risk for diabetes using a short form of simple survey questions, healthcare providers and public health officials can proactively recommend lifestyle coaching, preventative care, and clinical blood testing (like A1C) before severe complications arise.
 **Stakeholders:**
 *   **Public Health Officials (e.g., CDC, State Health Departments):** Care about population health trends, resource allocation, and identifying highly predictive risk factors to design public awareness campaigns.
@@ -17,7 +17,7 @@ This analysis will inform targeted public health interventions and early screeni
 *   **Health Insurance Companies:** Care about reducing the enormous economic burden of chronic diabetes complications (currently approaching $400 billion annually) through preventative care.
 *   **Patients/Individuals:** Care about early awareness of their health status to make lifestyle changes (diet, exercise) that can mitigate or reverse disease progression.
 
-**Unit of Analysis:** 
+**Unit of Analysis:**
 An individual survey respondent.
 
 **Scope and Boundaries:**
@@ -43,7 +43,7 @@ An individual survey respondent.
 **Documentation of Provenance:**
 *   **URL:** `https://www.kaggle.com/datasets/alexteboul/diabetes-health-indicators-dataset/data`
 *   **Original Source:** CDC BRFSS 2015 Survey.
-*   **Files Downloaded:** 
+*   **Files Downloaded:**
     *   `diabetes_binary_5050split_health_indicators_BRFSS2015.csv` (Balanced dataset, 70,692 rows)
     *   `diabetes_binary_health_indicators_BRFSS2015.csv` (Imbalanced dataset, 253,680 rows)
 
@@ -63,7 +63,7 @@ An individual survey respondent.
 *   The data represents individual survey responses, which perfectly matches our unit of analysis.
 
 **Bias and Representativeness:**
-*   **Selection Bias:** Because BRFSS is a telephone survey, it inherently excludes individuals without access to a landline or cellular phone. 
+*   **Selection Bias:** Because BRFSS is a telephone survey, it inherently excludes individuals without access to a landline or cellular phone.
 *   **Response/Recall Bias:** Features like BMI (derived from height/weight), physical activity, and diet are self-reported. Individuals often underestimate weight and overestimate physical activity due to social desirability bias.
 
 ---
@@ -77,7 +77,7 @@ An individual survey respondent.
 *   With 70k+ examples in the balanced 50/50 split file, there are more than enough examples per class (35k positive, 35k negative) to train standard machine learning models effectively.
 
 **Feature-Target Alignment:**
-*   Features are available at prediction time (they are just questions a person can answer about their current habits/history). 
+*   Features are available at prediction time (they are just questions a person can answer about their current habits/history).
 *   We must ensure there is no target leakage (e.g., making sure no feature directly asks "Has a doctor prescribed you insulin?" if we are using it to predict undiagnosed status).
 
 ---
@@ -85,7 +85,7 @@ An individual survey respondent.
 ## 5. KPI Definition (Key Performance Indicators)
 
 **Primary KPI:**
-*   **Recall (Sensitivity) for the Positive Class (Diabetes/Prediabetes).** 
+*   **Recall (Sensitivity) for the Positive Class (Diabetes/Prediabetes).**
     *   *Rationale:* In a public health screening context, a false negative (failing to identify someone at risk of diabetes) is highly detrimental, as the disease will progress unmanaged. A false positive (flagging a healthy person as high risk) merely results in a recommendation to consult a doctor or get a routine blood test, which carries a much lower cost. Therefore, capturing as many true positives as possible is our primary metric for success.
 
 **Secondary KPIs:**
