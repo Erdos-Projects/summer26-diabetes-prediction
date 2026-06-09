@@ -66,6 +66,16 @@ An individual survey respondent.
 *   **Selection Bias:** Because BRFSS is a telephone survey, it inherently excludes individuals without access to a landline or cellular phone.
 *   **Response/Recall Bias:** Features like BMI (derived from height/weight), physical activity, and diet are self-reported. Individuals often underestimate weight and overestimate physical activity due to social desirability bias.
 
+**Automated Exploratory Data Analysis (EDA) Strategy:**
+While targeted manual analysis will be performed on key features, we will also leverage automated profiling tools to gain a comprehensive overview of the entire dataset efficiently.
+
+Specifically, we plan to utilize `sweetviz` and `dtale` to generate a static HTML report. This automated report will provide:
+* **Univariate Analysis:** Histograms and bar charts for all 21 features.
+* **Descriptive Statistics:** Mean, median, distinct counts, and missing value alerts.
+* **Multicollinearity Checks:** High-level correlation matrices (Pearson/Spearman) to quickly flag variables that are highly linearly dependent.
+
+*This approach ensures we have a complete "bird's-eye view" of the data distribution and potential anomalies without cluttering our primary modeling notebooks with excessive boilerplate code.*
+
 ---
 
 ## 4. Assessing Learnability

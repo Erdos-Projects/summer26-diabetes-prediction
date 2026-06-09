@@ -1,0 +1,32 @@
+[project]
+name = "summer26-diabetes-prediction"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Your Name",email = "you@example.com"}
+]
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "pandas (>=3.0.3,<4.0.0)",
+    "numpy (>=2.4.6,<3.0.0)",
+    "matplotlib (>=3.10.9,<4.0.0)",
+    "seaborn (>=0.13.2,<0.14.0)",
+    "ipykernel (>=7.2.0,<8.0.0)",
+    "dtale (>=3.22.0,<4.0.0)",
+    "sweetviz (>=2.3.3,<3.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "pre-commit (>=4.6.0,<5.0.0)",
+    "ruff (>=0.15.16,<0.16.0)"
+]
+
+[tool.poetry]
+package-mode = false
