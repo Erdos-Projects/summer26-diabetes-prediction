@@ -7,105 +7,145 @@ Team project: summer26-diabetes-prediction
 
 ## 1. Problem Definition
 
-**Question:** Can we accurately predict an individual's risk of having diabetes or prediabetes based on self-reported health, lifestyle, and demographic survey data?
+**Question:** Can we predict whether an individual has diabetes using self-reported health, lifestyle, and demographic survey data?
 
 **Decision/Action Informed:**
-This analysis will inform targeted public health interventions and early screening programs. By accurately identifying individuals at high risk for diabetes using a short form of simple survey questions, healthcare providers and public health officials can proactively recommend lifestyle coaching, preventative care, and clinical blood testing (like A1C) before severe complications arise.
+This project supports early diabetes risk screening. The model is not intended to diagnose diabetes clinically, but it can help identify people who may benefit from follow-up testing, lifestyle counseling, or preventive care. Because the features are based on survey-style health indicators, the workflow is suitable for population-level screening and public health prioritization.
+
 **Stakeholders:**
-*   **Public Health Officials (e.g., CDC, State Health Departments):** Care about population health trends, resource allocation, and identifying highly predictive risk factors to design public awareness campaigns.
-*   **Healthcare Providers (Doctors, Clinics):** Care about efficiently identifying undiagnosed high-risk patients for early intervention without relying strictly on laboratory tests.
-*   **Health Insurance Companies:** Care about reducing the enormous economic burden of chronic diabetes complications (currently approaching $400 billion annually) through preventative care.
-*   **Patients/Individuals:** Care about early awareness of their health status to make lifestyle changes (diet, exercise) that can mitigate or reverse disease progression.
+*   **Public Health Officials (e.g., CDC, State Health Departments):** Care about population health trends, resource allocation, and identifying important risk factors for prevention campaigns.
+*   **Healthcare Providers (Doctors, Clinics):** Care about efficiently identifying patients who may need additional screening, such as A1C or fasting blood glucose tests.
+*   **Health Insurance Companies:** Care about reducing long-term costs from diabetes-related complications through earlier intervention.
+*   **Patients/Individuals:** Care about earlier awareness of diabetes risk so they can seek care and make lifestyle changes.
 
 **Unit of Analysis:**
 An individual survey respondent.
 
 **Scope and Boundaries:**
-*   **Population:** United States adults who participated in the CDC's Behavioral Risk Factor Surveillance System (BRFSS) telephone survey.
+*   **Population:** United States adults who participated in the CDC Behavioral Risk Factor Surveillance System (BRFSS) survey.
 *   **Time Horizon:** 2015 survey data.
-*   **Features:** 21 derived feature variables (including BMI, physical activity, fruit/veggie consumption, general health, age, etc.).
+*   **Features:** 21 health indicator variables, including BMI, high blood pressure, high cholesterol, physical activity, general health, age, income, and education.
+*   **Target Definition:** The raw target has three classes: `0 = no diabetes`, `1 = prediabetes`, and `2 = diabetes`. In our current modeling pipeline, we convert this into a binary target: `0 = no diabetes or prediabetes`, `1 = diabetes`.
 
 **Anti-goals:**
-*   We will *not* attempt to build a model for clinical diagnosis. Clinical diagnosis requires blood work (e.g., fasting blood sugar). Our goal is *risk prediction/screening*.
-*   We will *not* prescribe medical treatments or medications.
-*   We will *not* predict Type I vs. Type II diabetes specifically, though Type II is the vast majority of cases in this dataset.
+*   We will *not* build a clinical diagnosis tool. Clinical diagnosis requires medical testing.
+*   We will *not* prescribe treatment, medication, or individual medical advice.
+*   We will *not* distinguish Type I vs. Type II diabetes.
+*   We will *not* separately model prediabetes in the current version; prediabetes is grouped with the non-diabetes class.
 
 ---
 
 ## 2. Data Gathering
 
 **Source Identification:**
-*   Public dataset via Kaggle: "Diabetes Health Indicators Dataset" (Derived from the CDC's BRFSS 2015 dataset).
+*   Public Kaggle dataset: "Diabetes Health Indicators Dataset", derived from the CDC BRFSS 2015 dataset.
 
 **Acquisition Strategy:**
-*   One-time download of the prepared CSV files from Kaggle. No automated pipeline or web scraping is required as the dataset is static for the year 2015.
+*   One-time download of the prepared CSV file from Kaggle. No automated scraping pipeline is used.
 
 **Documentation of Provenance:**
 *   **URL:** `https://www.kaggle.com/datasets/alexteboul/diabetes-health-indicators-dataset/data`
 *   **Original Source:** CDC BRFSS 2015 Survey.
-*   **Files Downloaded:**
-    *   `diabetes_binary_5050split_health_indicators_BRFSS2015.csv` (Balanced dataset, 70,692 rows)
-    *   `diabetes_binary_health_indicators_BRFSS2015.csv` (Imbalanced dataset, 253,680 rows)
+*   **Raw File Used:**
+    *   `data/raw/diabetes_012_health_indicators_BRFSS2015.csv`
+*   **Processed Files Created:**
+    *   `data/processed/cleaned_diabetes_01_data.csv`
+    *   `data/processed/train.csv`
+    *   `data/processed/test.csv`
+
+**Current Data Processing Pipeline:**
+*   `notebooks/01_eda_and_data_cleaning.ipynb` loads the raw `012` dataset.
+*   The original `Diabetes_012` target is converted to binary:
+    *   original `0` and `1` become `0`
+    *   original `2` becomes `1`
+*   The target column is renamed from `Diabetes_012` to `Diabetes_01`.
+*   The cleaned binary dataset is saved as `cleaned_diabetes_01_data.csv`.
+*   A stratified 80/20 train-test split is created with `random_state=42`.
+*   Model selection notebooks use `train.csv` for 5-fold cross-validation.
 
 **Ethical and Legal Considerations:**
-*   **Licensing:** Public domain dataset generated by a US government agency (CDC).
-*   **Privacy:** The data is fully anonymized. There is no Personally Identifiable Information (PII) included.
-*   **Ethical Handling:** We must be mindful that the dataset includes social determinants of health (income, education, race). Models must be evaluated for fairness to ensure they do not unjustly penalize vulnerable demographics.
+*   **Licensing:** The dataset is derived from a public CDC survey.
+*   **Privacy:** The data is anonymized and does not include direct personally identifiable information.
+*   **Ethical Handling:** The data includes sensitive social and health-related variables. Results should be interpreted carefully, especially for features related to age, income, education, and access to care.
 
 ---
 
 ## 3. Data Assessment
 
 **Volume and Coverage:**
-*   There is ample data to support modeling. The primary balanced dataset contains over 70,000 records, and the full dataset contains over 250,000 records.
+*   The raw dataset contains over 250,000 survey responses, which is sufficient for training and comparing several classification models.
 
 **Granularity:**
-*   The data represents individual survey responses, which perfectly matches our unit of analysis.
+*   Each row represents one individual respondent, matching the project unit of analysis.
+
+**Target Construction:**
+*   The original dataset supports three-class modeling, but the current project focuses on binary classification: diabetes vs. non-diabetes/prediabetes.
+*   This makes the modeling task clearer for screening: identify respondents likely to belong to the diabetes class.
+*   The binary target is imbalanced because diabetes cases are less common than non-diabetes/prediabetes cases.
 
 **Bias and Representativeness:**
-*   **Selection Bias:** Because BRFSS is a telephone survey, it inherently excludes individuals without access to a landline or cellular phone.
-*   **Response/Recall Bias:** Features like BMI (derived from height/weight), physical activity, and diet are self-reported. Individuals often underestimate weight and overestimate physical activity due to social desirability bias.
+*   **Selection Bias:** BRFSS is a survey dataset, so it may underrepresent people who are less reachable by phone or less likely to respond.
+*   **Response/Recall Bias:** BMI, physical activity, diet, and general health are self-reported or survey-derived, so they may contain reporting error.
+*   **Class Imbalance:** The positive diabetes class is smaller than the negative class, so accuracy alone is not enough to evaluate model quality.
 
-**Automated Exploratory Data Analysis (EDA) Strategy:**
-While targeted manual analysis will be performed on key features, we will also leverage automated profiling tools to gain a comprehensive overview of the entire dataset efficiently.
-
-Specifically, we plan to utilize `ydata-profiling` to generate a static HTML report. This automated report will provide:
-* **Univariate Analysis:** Histograms and bar charts for all 21 features.
-* **Descriptive Statistics:** Mean, median, distinct counts, and missing value alerts.
-* **Multicollinearity Checks:** High-level correlation matrices (Pearson/Spearman) to quickly flag variables that are highly linearly dependent.
-
-*This approach ensures we have a complete "bird's-eye view" of the data distribution and potential anomalies without cluttering our primary modeling notebooks with excessive boilerplate code.*
+**Exploratory Data Analysis Strategy:**
+*   The EDA notebook checks target distribution, feature distributions, correlations, and BMI patterns.
+*   The heatmap is used to identify features most correlated with the binary diabetes target.
+*   These observations are later compared with logistic regression coefficients to see whether important model features align with EDA patterns.
 
 ---
 
 ## 4. Assessing Learnability
 
 **Signal vs. Noise:**
-*   The features plausibly contain high information signal. Variables such as High Blood Pressure, High Cholesterol, BMI, and Age are well-documented, medically proven correlates to Type II Diabetes.
+*   The feature set contains medically plausible signals. High blood pressure, high cholesterol, BMI, age, general health, and difficulty walking are all expected to relate to diabetes risk.
 
 **Data Sufficiency:**
-*   With 70k+ examples in the balanced 50/50 split file, there are more than enough examples per class (35k positive, 35k negative) to train standard machine learning models effectively.
+*   The full BRFSS-derived dataset provides enough examples for standard machine learning models, including linear models, tree-based models, support vector machines, gradient boosting, and neural networks.
 
 **Feature-Target Alignment:**
-*   Features are available at prediction time (they are just questions a person can answer about their current habits/history).
-*   We must ensure there is no target leakage (e.g., making sure no feature directly asks "Has a doctor prescribed you insulin?" if we are using it to predict undiagnosed status).
+*   The features are available at prediction time because they are survey-style health indicators.
+*   The target is based on reported diabetes status, so the model should be understood as predicting current diabetes class from survey data, not diagnosing future disease onset.
+
+**Models Implemented So Far:**
+*   `notebooks/02_baseline.ipynb`: Dummy classifier baseline.
+*   `notebooks/03_logistic_regression.ipynb`: Logistic regression, Lasso logistic regression, and Ridge logistic regression with coefficient comparison.
+*   `notebooks/04_random_forest.ipynb`: Random forest with 5-fold cross-validation.
+*   `notebooks/05_gradient_boost.ipynb`: XGBoost classifier with 5-fold cross-validation.
+*   `notebooks/06_svm.ipynb`: Linear SVM with 5-fold cross-validation.
+*   `notebooks/07_nn.ipynb`: MLP neural network using Keras/TensorFlow with 5-fold cross-validation.
 
 ---
 
 ## 5. KPI Definition (Key Performance Indicators)
 
 **Primary KPI:**
-*   **Recall (Sensitivity) for the Positive Class (Diabetes/Prediabetes).**
-    *   *Rationale:* In a public health screening context, a false negative (failing to identify someone at risk of diabetes) is highly detrimental, as the disease will progress unmanaged. A false positive (flagging a healthy person as high risk) merely results in a recommendation to consult a doctor or get a routine blood test, which carries a much lower cost. Therefore, capturing as many true positives as possible is our primary metric for success.
+*   **Recall (Sensitivity) for the Diabetes Class.**
+    *   *Rationale:* In a screening context, false negatives are costly because a person with diabetes may not be flagged for follow-up care. Higher recall helps identify more true diabetes cases.
 
 **Secondary KPIs:**
-*   **F1-Score:** To ensure precision doesn't drop so low that the model becomes useless (i.e., we don't want to just predict "Diabetes" for everyone). F1 provides a balance between Recall and Precision.
-*   **ROC-AUC (Area Under the Receiver Operating Characteristic Curve):** To measure the model's overall ability to discriminate between the healthy and diabetic/prediabetic classes across different thresholds.
-*   **Accuracy:** Useful as a baseline metric, particularly when using the 50/50 balanced dataset.
+*   **Precision:** Measures how many predicted diabetes cases are actually diabetes cases.
+*   **F1-Score:** Balances precision and recall equally.
+*   **F2-Score:** Gives more weight to recall than precision, which fits the screening goal better than F1 alone.
+*   **AUPRC:** Measures ranking quality under class imbalance and is useful when the positive class is relatively rare.
+*   **ROC-AUC:** Measures overall discrimination between the two classes across thresholds.
+*   **Predicted Positive Rate:** Helps interpret how aggressive each threshold is.
+
+**Validation Strategy:**
+*   The processed data is split into stratified train and test sets.
+*   Model comparison is performed using 5-fold stratified cross-validation on the training set.
+*   Metrics are computed directly from validation-fold predictions, not through `make_scorer`.
+
+**Threshold Strategy:**
+For models that output probabilities or decision scores, we compare:
+1.  **Default threshold**
+    *   `0.5` for probability-based models.
+    *   `0.0` for the Linear SVM decision function.
+2.  **Max F2 threshold**
+    *   Selects the threshold that maximizes F2, prioritizing recall.
+3.  **Max TPR-FPR threshold**
+    *   Selects the threshold that maximizes `TPR - FPR` from the ROC curve.
 
 **Baseline Definition:**
-As part of our initial modeling, we will establish baseline performance using:
-1.  **Trivial Baseline:** `DummyClassifier` (predicting the most frequent class or stratified random).
-2.  **Linear Model:** `LogisticRegression` (good for interpretability of health risk factors).
-3.  **Tree-Based Model:** `RandomForestClassifier`.
-*These will be evaluated using K-Fold cross-validation, recording the Primary and Secondary KPIs in our baseline notebook.*
+*   The baseline notebook uses a `DummyClassifier(strategy="most_frequent")`.
+*   All stronger models are compared against this baseline using recall, F1, F2, and related validation metrics.
