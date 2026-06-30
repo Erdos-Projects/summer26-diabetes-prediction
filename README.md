@@ -55,6 +55,7 @@ An individual survey respondent.
 
 **Current Data Processing Pipeline:**
 *   `notebooks/01_eda_and_data_cleaning.ipynb` loads the raw `012` dataset.
+*   Exact duplicate rows are removed in the main analysis pipeline.
 *   The original `Diabetes_012` target is converted to binary:
     *   original `0` and `1` become `0`
     *   original `2` becomes `1`
@@ -62,6 +63,8 @@ An individual survey respondent.
 *   The cleaned binary dataset is saved as `cleaned_diabetes_01_data.csv`.
 *   A stratified 80/20 train-test split is created with `random_state=42`.
 *   Model selection notebooks use `train.csv` for 5-fold cross-validation.
+*   Final held-out test evaluation is performed in `notebooks/all_model_testing.ipynb`.
+*   Duplicate-removal sensitivity analysis is performed in `notebooks/duplicate_sensitivity_check.ipynb`.
 
 **Ethical and Legal Considerations:**
 *   **Licensing:** The dataset is derived from a public CDC survey.
@@ -114,6 +117,9 @@ An individual survey respondent.
 *   `notebooks/05_gradient_boost.ipynb`: XGBoost classifier with 5-fold cross-validation.
 *   `notebooks/06_svm.ipynb`: Linear SVM with 5-fold cross-validation.
 *   `notebooks/07_nn.ipynb`: MLP neural network using Keras/TensorFlow with 5-fold cross-validation.
+*   `notebooks/all_model_testing.ipynb`: Final held-out test-set evaluation across all model families.
+*   `notebooks/duplicate_sensitivity_check.ipynb`: Sensitivity check comparing the main deduplicated pipeline against a keep-duplicates pipeline.
+*   `final_report.md`: Executive summary of project results, implications, duplicate sensitivity findings, limitations, and future work.
 
 ---
 
